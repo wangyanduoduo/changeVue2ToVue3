@@ -1,0 +1,32 @@
+{
+  "name": "elm",
+  "version": "2.0.1",
+  "description": "vue2-elm",
+  "author": "cangdu <1264889788@qq.com>",
+  "private": true,
+  "license": "GPL",
+  "scripts": {
+    "local": "cross-env NODE_ENV=local node build/dev-server.js",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "@vue/cli-service": "^5.0.8",
+    "better-scroll": "1.15.2",
+    "fastclick": "^1.0.6",
+    "iscroll": "^5.2.0",
+    "showdown": "^1.6.4",
+    "vue": "^3.0.0",
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.0-0"
+  },
+  "engines": {
+    "node": ">= 4.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "devDependencies": {
+    "@vue/compiler-sfc": "^3.3.13",
+    "sass": "^1.69.5",
+    "sass-loader": "^13.3.3"
+  }
+}
