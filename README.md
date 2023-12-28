@@ -2,7 +2,7 @@
  * @Author: wy
  * @Date: 2023-12-27 10:55:25
  * @LastEditors: wy
- * @LastEditTime: 2023-12-28 16:14:00
+ * @LastEditTime: 2023-12-28 17:04:00
  * @FilePath: /笔记/changeVue2ToVue3/README.md
  * @Description:
 -->
@@ -196,4 +196,62 @@ const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin");
 new AddAssetHtmlPlugin({
   filepath: path.resolve(__dirname, "./dll/vue.dll.js"),
 });
+```
+
+#### webpack 的 cache 开启缓存，加快构建数度
+
+```js
+{
+  cache: false;
+}
+```
+
+#### image-webpack-loader 压缩图片
+
+```js
+rules: [
+  {
+    test: /\.(gif|png|jpe?g|svg)$/i,
+    use: [
+      {
+        loader: "image-webpack-loader",
+        options: {
+          mozjpeg: {
+            progressive: true,
+          },
+          // optipng.enabled: false will disable optipng
+          optipng: {
+            enabled: false,
+          },
+          pngquant: {
+            quality: [0.65, 0.9],
+            speed: 4,
+          },
+          gifsicle: {
+            interlaced: false,
+          },
+          // the webp option will enable WEBP
+          webp: {
+            quality: 75,
+          },
+        },
+      },
+    ],
+  },
+];
+```
+
+#### purgecss-webpack-plugin 删除未使用的 css
+
+```js
+const glob = require("glob");
+const { PurgeCSSPlugin } = require("purgecss-webpack-plugin");
+
+const PATHS = {
+  src: path.join(__dirname, "src"),
+};
+
+new PurgeCSSPlugin({
+  paths: glob.sync(`${PATHS.src}/**/*`, { nodir: true })
+}),
 ```
