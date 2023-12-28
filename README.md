@@ -2,7 +2,7 @@
  * @Author: wy
  * @Date: 2023-12-27 10:55:25
  * @LastEditors: wy
- * @LastEditTime: 2023-12-27 15:53:53
+ * @LastEditTime: 2023-12-28 16:14:00
  * @FilePath: /笔记/changeVue2ToVue3/README.md
  * @Description:
 -->
@@ -97,4 +97,103 @@ const router = createRouter({
 });
 
 export default router;
+```
+
+### 性能优化
+
+#### speed-measure-webpack-plugin 构建速度分析
+
+```js
+const path = require("path");
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+
+const smp = new SpeedMeasurePlugin({
+  // outputFormat: "humanVerbose",
+});
+
+module.exports = {
+  configureWebpack: smp.wrap({
+    resolve: {
+      alias: {
+        src: path.resolve(__dirname, "./src"),
+        assets: path.resolve(__dirname, "./src/assets"),
+        components: path.resolve(__dirname, "./src/components"),
+      },
+    },
+  }),
+};
+```
+
+#### webpack-bundle-analyzer 构建体积分析
+
+```js
+ plugins: [new BundleAnalyzerPlugin()],
+```
+
+#### thread-loader 开启多线程
+
+vue-cli 中可以配置`parallel`可以自动开启
+
+#### dll 分包
+
+- 建立一个 webpack.dll.config.js,利用 webpack.DllPlugin 实现分包
+  ```js
+  const path = require("path");
+  const webpack = require("webpack");
+  const dllPath = "../dll";
+  module.exports = {
+    mode: "production",
+    entry: {
+    vue: ["vue", "vue-router", "vuex"],
+    },
+    output: {
+      path: path.join(**dirname, dllPath),
+      filename: "[name].dll.js",
+      library: "[name]\_[hash]",
+    },
+    plugins: [
+      // manifest是用于之后排除，打包的
+      new webpack.DllPlugin({
+        path: path.join(__dirname, dllPath, "[name]-manifest.json"),
+        name: "[name]\_[hash]", // 必须和 output.library 一致
+        context: process.cwd(),
+      }),
+    ],
+  };
+  ```
+- 生成 dll 相关文件
+
+```js
+ "dll": "webpack --config build/webpack.dll.config.js"
+```
+
+会产生 dll 文件夹
+
+```js
+├── vue-manifest.json
+├── vue.dll.js
+└── vue.dll.js.LICENSE.txt
+```
+
+- 打包时，`webpack.DllReferencePlugin`排除 dll 分包
+
+  分包完成，打包的时候，分包的文件就不需要把分包文件，打包进入了,通过**manifest**确定要被排除的文件。
+
+  ```js
+  // vue.config.js
+  new webpack.DllReferencePlugin({
+    context: __dirname,
+    manifest: path.resolve(__dirname, "./dll/vue-manifest.json"),
+  });
+  ```
+
+- index.html 文件引入分包文件
+  分包的文件，在最终打包的时候，被排除了，dist 里面，没有这部分的代码，程序运行的时候，会出错，所以需要把分包的文件，导入 html 中
+
+```js
+const AddAssetHtmlPlugin = require("add-asset-html-webpack-plugin");
+// ...
+new AddAssetHtmlPlugin({
+  filepath: path.resolve(__dirname, "./dll/vue.dll.js"),
+});
 ```

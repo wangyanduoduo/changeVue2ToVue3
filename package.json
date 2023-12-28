@@ -8,7 +8,8 @@
   "scripts": {
     "local": "cross-env NODE_ENV=local node build/dev-server.js",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "dll": "webpack --config build/webpack.dll.config.js"
   },
   "dependencies": {
     "@vue/cli-service": "^5.0.8",
@@ -26,7 +27,13 @@
   },
   "devDependencies": {
     "@vue/compiler-sfc": "^3.3.13",
+    "add-asset-html-webpack-plugin": "^6.0.0",
+    "copy-webpack-plugin": "^11.0.0",
     "sass": "^1.69.5",
-    "sass-loader": "^13.3.3"
+    "sass-loader": "^13.3.3",
+    "speed-measure-webpack-plugin": "^1.5.0",
+    "webpack": "^5.89.0",
+    "webpack-bundle-analyzer": "^4.10.1",
+    "webpack-cli": "^5.1.4"
   }
 }
